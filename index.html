@@ -302,49 +302,49 @@
                 title: "REGISTER 1: CASUAL",
                 audience: "family, friends, texts, personal emails",
                 traits: [
-                    "Fragments and dropped subjects: "Went to the tulip farm." "Took care of home life as well!"",
-                    "Short bursts, then rambling run-ons listing plans day by day",
-                    "Big emotion in small packages: "So sweet!!!" "Stoked that…"",
-                    "ALL CAPS for emphasis on single words (PERFECT, HEY). Multiple !! are fine.",
-                    "Emoticons/emoji sparingly: ":)" and "❤️". Casual slang: JK, af, haha.",
-                    "Playful teasing with quick self-correction",
-                    "Rhetorical asides that don't always get question marks",
-                    "Loose punctuation and capitalization. Don't polish it.",
-                    "No formal sign-off. Can end abruptly or with an exclamation."
+                    `Fragments and dropped subjects: "Went to the tulip farm." "Took care of home life as well!"`,
+                    `Short bursts, then rambling run-ons listing plans day by day`,
+                    `Big emotion in small packages: "So sweet!!!" "Stoked that…"`,
+                    `ALL CAPS for emphasis on single words (PERFECT, HEY). Multiple !! are fine.`,
+                    `Emoticons/emoji sparingly: ":)" and "❤️". Casual slang: JK, af, haha.`,
+                    `Playful teasing with quick self-correction`,
+                    `Rhetorical asides that don't always get question marks`,
+                    `Loose punctuation and capitalization. Don't polish it.`,
+                    `No formal sign-off. Can end abruptly or with an exclamation.`
                 ]
             },
             "2": {
                 title: "REGISTER 2: PROFESSIONAL-FRIENDLY",
                 audience: "colleagues, preceptors, coworkers, admin",
                 traits: [
-                    "Open with "Hi [Name]," then say who you are and why in one sentence.",
-                    "Warm and a little informal: "pretty excited," "just wanted to reach out."",
-                    "Show appreciation briefly and sincerely, once.",
-                    "Practical questions stacked back to back, short and concrete",
-                    "Short overall: 4–8 sentences. Sign off casually ("Thanks!").",
+                    `Open with "Hi [Name]," then say who you are and why in one sentence.`,
+                    `Warm and a little informal: "pretty excited," "just wanted to reach out."`,
+                    `Show appreciation briefly and sincerely, once.`,
+                    `Practical questions stacked back to back, short and concrete`,
+                    `Short overall: 4–8 sentences. Sign off casually ("Thanks!").`,
                 ]
             },
             "3": {
                 title: "REGISTER 3: FORMAL",
                 audience: "applications, personal statements, cover letters",
                 traits: [
-                    "Earnest and direct. First person, active voice, confident goals.",
-                    "Ground claims in concrete clinical specifics: named trials, devices, units, years. Define acronyms on first use.",
-                    "Use parentheticals for examples: "(such as…)".",
-                    ""However," is the natural pivot between ideas.",
-                    "Repeat a key phrase as a thread through the piece.",
-                    "Tell a progression story: where you started, what you learned, why this is next.",
-                    "Sincere ambition is fine, including naming lofty goals. No irony.",
-                    "Close by looping back to the opening goal."
+                    `Earnest and direct. First person, active voice, confident goals.`,
+                    `Ground claims in concrete clinical specifics: named trials, devices, units, years. Define acronyms on first use.`,
+                    `Use parentheticals for examples: "(such as…)".`,
+                    `"However," is the natural pivot between ideas.`,
+                    `Repeat a key phrase as a thread through the piece.`,
+                    `Tell a progression story: where you started, what you learned, why this is next.`,
+                    `Sincere ambition is fine, including naming lofty goals. No irony.`,
+                    `Close by looping back to the opening goal.`
                 ]
             },
             "all": {
                 title: "ALL REGISTERS",
                 traits: [
-                    "<strong>Be direct.</strong> Don't hedge or pad with qualifiers you wouldn't use.",
-                    "Vary sentence length naturally; never three similar-length sentences in a row.",
-                    "<strong>Banned:</strong> Furthermore, Moreover, In conclusion, Therefore, crucial, testament, delve, tapestry, It is important to note, In summary, I hope this email finds you well.",
-                    "No em-dash overuse, no tidy three-item lists of abstractions, no summary paragraph restating everything."
+                    `<strong>Be direct.</strong> Don't hedge or pad with qualifiers you wouldn't use.`,
+                    `Vary sentence length naturally; never three similar-length sentences in a row.`,
+                    `<strong>Banned:</strong> Furthermore, Moreover, In conclusion, Therefore, crucial, testament, delve, tapestry, It is important to note, In summary, I hope this email finds you well.`,
+                    `No em-dash overuse, no tidy three-item lists of abstractions, no summary paragraph restating everything.`
                 ]
             }
         };
@@ -480,10 +480,11 @@ Rewrite the text to match Aaron's voice exactly. Output only the rewritten text�
                     headers: {
                         'x-api-key': apiKey,
                         'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true',
                         'content-type': 'application/json'
                     },
                     body: JSON.stringify({
-                        model: 'claude-opus-4-1',
+                        model: 'claude-sonnet-4-5',
                         max_tokens: 2000,
                         system: systemPrompt,
                         messages: [
