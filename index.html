@@ -503,7 +503,16 @@ Rewrite the text to match Aaron's voice exactly. Output only the rewritten textâ
                 }
 
                 const data = await response.json();
-                const rewritten = data.content[0].text;
+                const rewritten = (data.content || [])
+                    .filter(b => b.type === 'text')
+                    .map(b => b.text)
+                    .join('\n')
+                    .trim();
+
+                if (!rewritten) {
+                    showStatus('No text came back. Raw response: ' + JSON.stringify(data).slice(0, 300), 'error');
+                    return;
+                }
 
                 document.getElementById('outputText').value = rewritten;
                 showStatus('Done!', 'success');
