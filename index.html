@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aaron's Voice Writer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel h2 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        textarea {
+            min-height: 200px;
+            font-family: 'Menlo', 'Monaco', monospace;
+            font-size: 13px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px 16px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #0052a3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: #666;
+        }
+
+        button.secondary:hover {
+            background: #555;
+        }
+
+        .register-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .register-buttons button {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+        .register-buttons button.active {
+            background: #0052a3;
+            box-shadow: 0 0 0 2px #0066cc, 0 0 0 4px rgba(0, 102, 204, 0.2);
+        }
+
+        .status {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .status.loading {
+            display: block;
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status.error {
+            display: block;
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .guide {
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .guide h3 {
+            font-size: 14px;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            color: #0066cc;
+            font-weight: 600;
+        }
+
+        .guide h3:first-child {
+            margin-top: 0;
+        }
+
+        .guide ul {
+            margin-left: 16px;
+            margin-bottom: 12px;
+        }
+
+        .guide li {
+            margin-bottom: 6px;
+        }
+
+        .guide strong {
+            color: #333;
+        }
+
+        .guide em {
+            color: #666;
+        }
+
+        .api-key-info {
+            background: #f9f9f9;
+            border-left: 3px solid #0066cc;
+            padding: 10px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Aaron's Voice Writer</h1>
+            <p class="subtitle">Paste rough text, choose a register, get back your voice</p>
+        </div>
+
+        <div class="panel">
+            <h2>Input & Settings</h2>
+
+            <div class="api-key-info">
+                🔒 Your API key stays in your browser. It's only sent to Claude's API—never stored on any server.
+            </div>
+
+            <div class="form-group">
+                <label>Claude API Key</label>
+                <input
+                    type="password"
+                    id="apiKey"
+                    placeholder="sk-..."
+                    value=""
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Register</label>
+                <div class="register-buttons">
+                    <button class="register-btn active" data-register="1">Casual</button>
+                    <button class="register-btn" data-register="2">Professional</button>
+                    <button class="register-btn" data-register="3">Formal</button>
+                </div>
+                <input
+                    type="text"
+                    id="context"
+                    placeholder="e.g., 'email to my manager', 'cover letter', 'text to a friend'…"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Your Text</label>
+                <textarea id="inputText" placeholder="Paste your AI-generated text, handwritten notes, or rough draft here…"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button onclick="rewriteText()">Rewrite</button>
+                <button class="secondary" onclick="clearAll()">Clear</button>
+            </div>
+
+            <div class="status" id="status"></div>
+        </div>
+
+        <div class="panel">
+            <h2>Output</h2>
+            <textarea id="outputText" placeholder="Your rewritten text will appear here…" readonly style="flex: 1;"></textarea>
+            <button onclick="copyOutput()" style="margin-top: 12px;">Copy Output</button>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                <h2 style="font-size: 14px; margin-bottom: 12px;">Voice Guide</h2>
+                <div class="guide" id="guide"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const VOICE_GUIDE = {
+            "1": {
+                title: "REGISTER 1: CASUAL",
+                audience: "family, friends, texts, personal emails",
+                traits: [
+                    "Fragments and dropped subjects: "Went to the tulip farm." "Took care of home life as well!"",
+                    "Short bursts, then rambling run-ons listing plans day by day",
+                    "Big emotion in small packages: "So sweet!!!" "Stoked that…"",
+                    "ALL CAPS for emphasis on single words (PERFECT, HEY). Multiple !! are fine.",
+                    "Emoticons/emoji sparingly: ":)" and "❤️". Casual slang: JK, af, haha.",
+                    "Playful teasing with quick self-correction",
+                    "Rhetorical asides that don't always get question marks",
+                    "Loose punctuation and capitalization. Don't polish it.",
+                    "No formal sign-off. Can end abruptly or with an exclamation."
+                ]
+            },
+            "2": {
+                title: "REGISTER 2: PROFESSIONAL-FRIENDLY",
+                audience: "colleagues, preceptors, coworkers, admin",
+                traits: [
+                    "Open with "Hi [Name]," then say who you are and why in one sentence.",
+                    "Warm and a little informal: "pretty excited," "just wanted to reach out."",
+                    "Show appreciation briefly and sincerely, once.",
+                    "Practical questions stacked back to back, short and concrete",
+                    "Short overall: 4–8 sentences. Sign off casually ("Thanks!").",
+                ]
+            },
+            "3": {
+                title: "REGISTER 3: FORMAL",
+                audience: "applications, personal statements, cover letters",
+                traits: [
+                    "Earnest and direct. First person, active voice, confident goals.",
+                    "Ground claims in concrete clinical specifics: named trials, devices, units, years. Define acronyms on first use.",
+                    "Use parentheticals for examples: "(such as…)".",
+                    ""However," is the natural pivot between ideas.",
+                    "Repeat a key phrase as a thread through the piece.",
+                    "Tell a progression story: where you started, what you learned, why this is next.",
+                    "Sincere ambition is fine, including naming lofty goals. No irony.",
+                    "Close by looping back to the opening goal."
+                ]
+            },
+            "all": {
+                title: "ALL REGISTERS",
+                traits: [
+                    "<strong>Be direct.</strong> Don't hedge or pad with qualifiers you wouldn't use.",
+                    "Vary sentence length naturally; never three similar-length sentences in a row.",
+                    "<strong>Banned:</strong> Furthermore, Moreover, In conclusion, Therefore, crucial, testament, delve, tapestry, It is important to note, In summary, I hope this email finds you well.",
+                    "No em-dash overuse, no tidy three-item lists of abstractions, no summary paragraph restating everything."
+                ]
+            }
+        };
+
+        let selectedRegister = "1";
+
+        // Load saved API key from localStorage
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('claude_api_key');
+            if (saved) {
+                document.getElementById('apiKey').value = saved;
+            }
+            renderGuide();
+        });
+
+        // Register button selection
+        document.querySelectorAll('.register-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.register-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                selectedRegister = e.target.dataset.register;
+                renderGuide();
+            });
+        });
+
+        function renderGuide() {
+            const guide = document.getElementById('guide');
+            let html = '';
+
+            const register = VOICE_GUIDE[selectedRegister];
+            html += `<h3>${register.title}</h3>`;
+            if (register.audience) {
+                html += `<p><em>${register.audience}</em></p>`;
+            }
+            html += '<ul>';
+            register.traits.forEach(trait => {
+                html += `<li>${trait}</li>`;
+            });
+            html += '</ul>';
+
+            // Always show "All registers"
+            const allRegs = VOICE_GUIDE.all;
+            html += `<h3>${allRegs.title}</h3><ul>`;
+            allRegs.traits.forEach(trait => {
+                html += `<li>${trait}</li>`;
+            });
+            html += '</ul>';
+
+            guide.innerHTML = html;
+        }
+
+        async function rewriteText() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const inputText = document.getElementById('inputText').value.trim();
+            const context = document.getElementById('context').value.trim();
+            const status = document.getElementById('status');
+
+            if (!apiKey) {
+                showStatus('Please enter your Claude API key', 'error');
+                return;
+            }
+
+            if (!inputText) {
+                showStatus('Please enter text to rewrite', 'error');
+                return;
+            }
+
+            // Save API key to localStorage
+            localStorage.setItem('claude_api_key', apiKey);
+
+            // Save text to localStorage
+            localStorage.setItem('input_text', inputText);
+            localStorage.setItem('context', context);
+
+            showStatus('Rewriting…', 'loading');
+
+            const registerLabels = {
+                "1": "Casual (family, friends, texts, personal emails)",
+                "2": "Professional-friendly (emails to colleagues, preceptors)",
+                "3": "Formal (applications, personal statements, cover letters)"
+            };
+
+            const systemPrompt = `You are an expert at writing in Aaron's voice. He's a critical care nurse practitioner with strong opinions and a direct style. Below is his voice guide. Your job is to rewrite the user's text to match his voice exactly—including his tone, sentence structure, word choices, and formatting habits.
+
+# Voice Guide: Write like Aaron
+
+Match the register to the audience before writing anything:
+
+## REGISTER 1: CASUAL (family, friends, texts, personal emails)
+- Fragments and dropped subjects are normal: "Went to the tulip farm." "Took care of home life as well!"
+- Short bursts, then a rambling run-on that lists plans day by day ("Wednesday I'm doing X. Thursday I'm going to go climbing and then Friday it's just work again.")
+- Big emotion in small packages: "So sweet!!!" "Stoked that…" "Love you lots :)"
+- ALL CAPS for emphasis on single words (PERFECT, HEY). Multiple exclamation points are fine.
+- Emoticons/emoji sparingly: ":)" and "❤️". Casual slang/abbreviations: JK, af, haha.
+- Playful teasing, then a quick self-correction ("Slow down and enjoy your retirement. JK. I know that's literally what you are doing.")
+- Rhetorical asides that don't always get a question mark ("Life is crazy isn't it.")
+- Loose punctuation and capitalization are OK. Don't polish it.
+- No formal sign-off. Can end abruptly or with an exclamation ("AAH").
+
+## REGISTER 2: PROFESSIONAL-FRIENDLY (emails to colleagues, preceptors, coworkers, admin)
+- Open with "Hi [Name]," then say who I am and why I'm writing in one sentence.
+- Warm and a little informal: "pretty excited," "just wanted to reach out and say hi."
+- Show appreciation briefly and sincerely, once.
+- Practical questions stacked back to back, short and concrete ("Do you work days, nights, mixed?").
+- Short overall: 4–8 sentences. Sign off casually ("Thanks!").
+
+## REGISTER 3: FORMAL (applications, personal statements, professional bios, cover letters)
+- Earnest and direct. First person, active voice, confident goals ("My career goal is…", "I seek…").
+- Ground claims in concrete clinical specifics: named trials, devices, therapies, units, years of experience. Define acronyms on first use.
+- Use parentheticals for examples ("(such as…)").
+- "However," is my natural pivot between ideas. Use it.
+- Repeat a key phrase as a thread through the piece (e.g., "the sickest patients").
+- Tell a progression story: where I started, what I learned, why this is the next step.
+- Sincere ambition is fine, including naming goals as lofty. No irony.
+- Close by looping back to the opening goal.
+
+## ALL REGISTERS
+- Be direct. Don't hedge or pad with qualifiers I wouldn't use.
+- Vary sentence length naturally; never three similar-length sentences in a row.
+- Banned: "Furthermore," "Moreover," "In conclusion," "Therefore," "crucial," "testament," "delve," "tapestry," "It is important to note," "In summary," "I hope this email finds you well."
+- No em-dash overuse, no tidy three-item lists of abstractions, no summary paragraph restating everything.
+- If unsure which register applies, ask me.
+
+---
+
+The user wants Register ${selectedRegister} (${registerLabels[selectedRegister]}).${context ? ` Context: ${context}` : ''}
+
+Rewrite the text to match Aaron's voice exactly. Output only the rewritten text—no explanations or commentary.`;
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01',
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-opus-4-1',
+                        max_tokens: 2000,
+                        system: systemPrompt,
+                        messages: [
+                            {
+                                role: 'user',
+                                content: `Rewrite this text:\n\n${inputText}`
+                            }
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    showStatus(`API Error: ${error.error?.message || 'Unknown error'}`, 'error');
+                    return;
+                }
+
+                const data = await response.json();
+                const rewritten = data.content[0].text;
+
+                document.getElementById('outputText').value = rewritten;
+                showStatus('Done!', 'success');
+            } catch (err) {
+                showStatus(`Error: ${err.message}`, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('outputText');
+            output.select();
+            document.execCommand('copy');
+            showStatus('Copied to clipboard!', 'success');
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            document.getElementById('context').value = '';
+            showStatus('', '');
+        }
+    </script>
+</body>
+</html>
